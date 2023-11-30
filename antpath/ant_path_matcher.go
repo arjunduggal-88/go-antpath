@@ -71,9 +71,13 @@ func (ant *AntPathMatcher) IsPattern(path string) bool{
 }
 
 //@Override
-//Match
-func (ant *AntPathMatcher) Match(pattern,path string) bool{
-	return ant.doMatch(pattern, path, true, nil)
+// MatchStart
+func (ant *AntPathMatcher) MatchStart(pattern, path string) bool {
+	return ant.doMatch(pattern, path, false, nil, nil, false)
+}
+
+func (ant *AntPathMatcher) TokenizePath(path string) []*string {
+	return ant.tokenizePath(path)
 }
 
 //@Override
