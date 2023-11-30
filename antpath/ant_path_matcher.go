@@ -86,7 +86,7 @@ func (ant *AntPathMatcher) Match(pattern,path string) bool{
 // @Override
 // MatchV2
 func (ant *AntPathMatcher) MatchV2(pattern, path string, tokens []*string) bool {
-	return ant.doMatch(pattern, path, true, nil, tokens, useV2)
+	return ant.doMatch(pattern, path, true, nil, tokens)
 }
 
 func (ant *AntPathMatcher) TokenizePath(path string) []*string {
