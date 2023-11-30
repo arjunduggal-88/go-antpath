@@ -40,8 +40,8 @@ func Match(pattern,path string) bool{
 }
 
 //export MatchV2
-func MatchV2(pattern, path string, tokens []*string, useV2 bool) bool {
-	return pMatcher.Match(pattern, path, tokens, useV2)
+func MatchV2(pattern, path string, tokens []*string) bool {
+	return pMatcher.Match(pattern, path, tokens)
 }
 
 func TokenizePath(path string) []*string {
