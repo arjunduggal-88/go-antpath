@@ -22,16 +22,20 @@ import (
 * @return {@code true} if the supplied {@code path} matched, {@code false} if it didn't
 */
 //doMatch
-func (ant *AntPathMatcher) doMatch(pattern,path string,fullMatch bool,uriTemplateVariables *map[string]string) bool{
+func (ant *AntPathMatcher) doMatch(pattern, path string, fullMatch bool, uriTemplateVariables *map[string]string, tokens []*string, useV2 bool) bool {
 	if strings.HasPrefix(path,ant.pathSeparator) != strings.HasPrefix(pattern,ant.pathSeparator) {
 		return false
 	}
 	pattDirs := ant.tokenizePattern(pattern)
-	if fullMatch && ant.caseSensitive && !ant.isPotentialMatch(path,pattDirs){
+	if fullMatch && ant.caseSensitive && !ant.isPotentialMatch(path, pattDirs, useV2) {
 		return false
 	}
 
-	pathDirs := ant.tokenizePath(path)
+	pathDirs := tokens
+
+	if tokens == nil {
+		pathDirs = ant.tokenizePath(path)
+	}
 	//define variable
 	pattIdxStart := 0
 	pattIdxEnd := len(pattDirs) - 1
@@ -191,21 +195,67 @@ func (ant *AntPathMatcher) tokenizePath(path string) []*string{
 }
 
 //isPotentialMatch
-func (ant *AntPathMatcher) isPotentialMatch(path string,pattDirs []*string) bool{
+func (ant *AntPathMatcher) isPotentialMatch(path string, pattDirs []*string, useV2 bool) bool{
 	if !ant.trimTokens {
 		pos := 0
-		for _,pattDir := range pattDirs {
-			skipped := ant.skipSeparator(path, pos, ant.pathSeparator)
+		pathLen := utf8.RuneCountInString(path)
+		separatorLen := utf8.RuneCountInString(ant.pathSeparator)
+		pathBytes := Str2Bytes(path)
+		separatorBytes := Str2Bytes(ant.pathSeparator)
+		for _, pattDir := range pattDirs {
+			var skipped int
+			if useV2 {
+				skipped = ant.skipSeparatorV2(pathBytes, pos, separatorBytes, pathLen, separatorLen)
+			} else {
+				skipped = ant.skipSeparator(path, pos, ant.pathSeparator)
+			}
 			pos += skipped
-			skipped = ant.skipSegment(path, pos, *pattDir)
-			if skipped < utf8.RuneCountInString(*pattDir) {
+			pattDirLen := utf8.RuneCountInString(*pattDir)
+			if useV2 {
+				skipped = ant.skipSegmentV2(path, pos, *pattDir, pathLen, pattDirLen)
+			} else {
+				skipped = ant.skipSegment(path, pos, *pattDir)
+			}
+			if skipped < pattDirLen {
 				tempPattDir := rune((*pattDir)[0])
-				return skipped > 0 || utf8.RuneCountInString(*pattDir) > 0 && ant.isWildcardChar(tempPattDir)
+				return skipped > 0 || pattDirLen > 0 && ant.isWildcardChar(tempPattDir)
 			}
 			pos += skipped
 		}
 	}
 	return true
+}
+
+// skipSegment
+func (ant *AntPathMatcher) skipSegmentV2(path string, pos int, prefix string, pathLen, prefixLen int) int {
+	skipped := 0
+	for i := 0; i < prefixLen; i++ {
+		c := rune(prefix[i])
+		if ant.isWildcardChar(c) {
+			return skipped
+		}
+		currPos := pos + skipped
+		if currPos >= pathLen {
+			return 0
+		}
+		if c == rune(path[currPos]) {
+			skipped++
+		}
+	}
+	return skipped
+}
+
+// skipSeparator
+func (ant *AntPathMatcher) skipSeparatorV2(pathBytes []byte, pos int, separatorBytes []byte, pathLen, separatorLen int) int {
+	skipped := 0
+	for {
+		if StartsWithV2(pathBytes, separatorBytes, pos+skipped, pathLen, separatorLen) {
+			skipped += separatorLen
+		} else {
+			break
+		}
+	}
+	return skipped
 }
 
 //skipSegment
