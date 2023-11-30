@@ -77,9 +77,15 @@ func (ant *AntPathMatcher) IsPattern(path string) bool{
 	return strings.Index(path,"*")!=-1 || strings.Index(path,"?")!=-1
 }
 
+//@Override
+//Match
+func (ant *AntPathMatcher) Match(pattern,path string) bool{
+	return ant.doMatch(pattern, path, true, nil)
+}
+
 // @Override
-// Match
-func (ant *AntPathMatcher) Match(pattern, path string, tokens []*string, useV2 bool) bool {
+// MatchV2
+func (ant *AntPathMatcher) MatchV2(pattern, path string, tokens []*string, useV2 bool) bool {
 	return ant.doMatch(pattern, path, true, nil, tokens, useV2)
 }
 
@@ -90,7 +96,7 @@ func (ant *AntPathMatcher) TokenizePath(path string) []*string {
 //@Override
 //MatchStart
 func (ant *AntPathMatcher) MatchStart(pattern,path string) bool{
-	return ant.doMatch(pattern, path, false, nil, nil, false)
+	return ant.doMatch(pattern, path, false, nil)
 }
 
 //@Override
@@ -120,7 +126,7 @@ func (ant *AntPathMatcher) ExtractPathWithinPattern(pattern,path string) string{
 //ExtractUriTemplateVariables
 func (ant *AntPathMatcher) ExtractUriTemplateVariables(pattern,path string) *map[string]string{
 	variables := make(map[string]string)
-	result := ant.doMatch(pattern, path, true, &variables, nil, false)
+	result := ant.doMatch(pattern, path, true, &variables)
 	if !result {
 		panic("Pattern \"" + pattern + "\" is not a match for \"" + path + "\"")
 	}
@@ -147,7 +153,7 @@ func (ant *AntPathMatcher) Combine(pattern1,pattern2 string) string  {
 	}
 	//处理pattern
 	pattern1ContainsUriVar := strings.Index(pattern1,"{") != -1
-	if !strings.EqualFold(pattern1,pattern2) && !pattern1ContainsUriVar && ant.Match(pattern1, pattern2, nil, false) {
+	if !strings.EqualFold(pattern1,pattern2) && !pattern1ContainsUriVar && ant.Match(pattern1, pattern2) {
 		// /* + /hotel -> /hotel ; "/*.*" + "/*.html" -> /*.html
 		// However /user + /user -> /usr/user ; /{foo} + /bar -> /{foo}/bar
 		return pattern2
