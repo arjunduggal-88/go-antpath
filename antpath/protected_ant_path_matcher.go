@@ -27,8 +27,14 @@ func (ant *AntPathMatcher) doMatch(pattern, path string, fullMatch bool, uriTemp
 		return false
 	}
 	pattDirs := ant.tokenizePattern(pattern)
-	if fullMatch && ant.caseSensitive && !ant.isPotentialMatch(path, pattDirs, useV2) {
-		return false
+	if useV2 {
+		if fullMatch && ant.caseSensitive && !ant.isPotentialMatchV2(path, pattDirs) {
+			return false
+		}
+	} else {
+		if fullMatch && ant.caseSensitive && !ant.isPotentialMatch(path, pattDirs) {
+			return false
+		}
 	}
 
 	pathDirs := tokens
@@ -194,28 +200,35 @@ func (ant *AntPathMatcher) tokenizePath(path string) []*string{
 	return TokenizeToStringArray(path, ant.pathSeparator,ant.trimTokens,true)
 }
 
-//isPotentialMatch
-func (ant *AntPathMatcher) isPotentialMatch(path string, pattDirs []*string, useV2 bool) bool{
+// isPotentialMatch
+func (ant *AntPathMatcher) isPotentialMatch(path string, pattDirs []*string) bool {
+	if !ant.trimTokens {
+		pos := 0
+		for _, pattDir := range pattDirs {
+			skipped := ant.skipSeparator(path, pos, ant.pathSeparator)
+			pos += skipped
+			skipped = ant.skipSegment(path, pos, *pattDir)
+			if skipped < utf8.RuneCountInString(*pattDir) {
+				tempPattDir := rune((*pattDir)[0])
+				return skipped > 0 || utf8.RuneCountInString(*pattDir) > 0 && ant.isWildcardChar(tempPattDir)
+			}
+			pos += skipped
+		}
+	}
+	return true
+}
+
+// isPotentialMatch
+func (ant *AntPathMatcher) isPotentialMatchV2(path string, pattDirs []*string) bool {
 	if !ant.trimTokens {
 		pos := 0
 		pathLen := utf8.RuneCountInString(path)
-		separatorLen := utf8.RuneCountInString(ant.pathSeparator)
 		pathBytes := Str2Bytes(path)
-		separatorBytes := Str2Bytes(ant.pathSeparator)
 		for _, pattDir := range pattDirs {
-			var skipped int
-			if useV2 {
-				skipped = ant.skipSeparatorV2(pathBytes, pos, separatorBytes, pathLen, separatorLen)
-			} else {
-				skipped = ant.skipSeparator(path, pos, ant.pathSeparator)
-			}
+			skipped := ant.skipSeparatorV2(pathBytes, pos, ant.separatorBytes, pathLen, ant.separatorLen)
 			pos += skipped
 			pattDirLen := utf8.RuneCountInString(*pattDir)
-			if useV2 {
-				skipped = ant.skipSegmentV2(path, pos, *pattDir, pathLen, pattDirLen)
-			} else {
-				skipped = ant.skipSegment(path, pos, *pattDir)
-			}
+			skipped = ant.skipSegmentV2(path, pos, *pattDir, pathLen, pattDirLen)
 			if skipped < pattDirLen {
 				tempPattDir := rune((*pattDir)[0])
 				return skipped > 0 || pattDirLen > 0 && ant.isWildcardChar(tempPattDir)
