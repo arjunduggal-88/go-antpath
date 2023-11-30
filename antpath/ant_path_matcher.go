@@ -10,6 +10,7 @@ package antpath
 import (
 	"github.com/vibrantbyte/go-antpath/extend"
 	"strings"
+	"unicode/utf8"
 )
 
 //AntPathMatcher implement from PathMatcher interface
