@@ -35,8 +35,12 @@ func IsPattern(path string) bool {
 }
 
 //export Match
-func Match(pattern,path string) bool{
-	return pMatcher.Match(pattern,path)
+func Match(pattern, path string, tokens []*string, useV2 bool) bool {
+	return pMatcher.Match(pattern, path, tokens, useV2)
+}
+
+func TokenizePath(path string) []*string {
+	return pMatcher.TokenizePath(path)
 }
 
 //export MatchStart
