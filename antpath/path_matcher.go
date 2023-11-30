@@ -42,7 +42,7 @@ type PathMatcher interface {
 	Match(pattern, path string) bool
 	
 	//Match
-	MatchV2(pattern, path string, tokens []*string, useV2 bool) bool
+	MatchV2(pattern, path string, tokens []*string) bool
 
 	//TokenizePath
 	TokenizePath(path string) []*string
