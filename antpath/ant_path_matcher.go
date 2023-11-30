@@ -31,6 +31,9 @@ type AntPathMatcher struct {
 	trimTokens bool
 	//cachePatterns default value = true
 	cachePatterns bool
+	
+	separatorLen   int
+	separatorBytes []byte
 }
 
 /**
@@ -56,6 +59,9 @@ func NewS(separator string) *AntPathMatcher{
 	ant.tokenizedPatternCache = new(extend.SyncMap)
 	ant.stringMatcherCache = new(extend.SyncMap)
 	ant.pathSeparatorPatternCache = NewDefaultPathSeparatorPatternCache(separator)
+
+	ant.separatorLen = utf8.RuneCountInString(ant.pathSeparator)
+	ant.separatorBytes = Str2Bytes(ant.pathSeparator)
 
 	//filed
 	ant.caseSensitive = true
