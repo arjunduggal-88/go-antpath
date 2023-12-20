@@ -49,7 +49,7 @@ func TokenizePath(path string) []*string {
 }
 
 func GetStringMatcher(pattern string) *AntPathStringMatcher {
-	return pMatcher.getStringMatcher(pattern)
+	return pMatcher.GetStringMatcher(pattern)
 }
 
 //export MatchStart
