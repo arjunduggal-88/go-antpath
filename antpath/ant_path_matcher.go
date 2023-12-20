@@ -93,6 +93,10 @@ func (ant *AntPathMatcher) TokenizePath(path string) []*string {
 	return ant.tokenizePath(path)
 }
 
+func (ant *AntPathMatcher) getStringMatcher(pattern string) *AntPathStringMatcher {
+	return ant.getStringMatcher(pattern)
+}
+
 //@Override
 //MatchStart
 func (ant *AntPathMatcher) MatchStart(pattern,path string) bool{
