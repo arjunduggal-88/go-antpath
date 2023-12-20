@@ -93,7 +93,7 @@ func (ant *AntPathMatcher) TokenizePath(path string) []*string {
 	return ant.tokenizePath(path)
 }
 
-func (ant *AntPathMatcher) getStringMatcher(pattern string) *AntPathStringMatcher {
+func (ant *AntPathMatcher) GetStringMatcher(pattern string) *AntPathStringMatcher {
 	return ant.getStringMatcher(pattern)
 }
 
