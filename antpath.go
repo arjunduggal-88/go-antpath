@@ -48,7 +48,7 @@ func TokenizePath(path string) []*string {
 	return pMatcher.TokenizePath(path)
 }
 
-func getStringMatcher(pattern string) *AntPathStringMatcher {
+func GetStringMatcher(pattern string) *AntPathStringMatcher {
 	return pMatcher.getStringMatcher(pattern)
 }
 
