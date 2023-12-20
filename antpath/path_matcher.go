@@ -47,6 +47,9 @@ type PathMatcher interface {
 	//TokenizePath
 	TokenizePath(path string) []*string
 
+	// getStringMatcher
+	getStringMatcher(pattern string) *AntPathStringMatcher
+
 	/**
 	 * Match the given {@code path} against the corresponding part of the given
 	 * {@code pattern}, according to this PathMatcher's matching strategy.
