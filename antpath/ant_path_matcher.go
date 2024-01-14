@@ -10,6 +10,7 @@ package antpath
 import (
 	"github.com/vibrantbyte/go-antpath/extend"
 	"strings"
+	"unicode/utf8"
 )
 
 //AntPathMatcher implement from PathMatcher interface
@@ -31,6 +32,9 @@ type AntPathMatcher struct {
 	trimTokens bool
 	//cachePatterns default value = true
 	cachePatterns bool
+	
+	separatorLen   int
+	separatorBytes []byte
 }
 
 /**
@@ -57,6 +61,9 @@ func NewS(separator string) *AntPathMatcher{
 	ant.stringMatcherCache = new(extend.SyncMap)
 	ant.pathSeparatorPatternCache = NewDefaultPathSeparatorPatternCache(separator)
 
+	ant.separatorLen = utf8.RuneCountInString(ant.pathSeparator)
+	ant.separatorBytes = Str2Bytes(ant.pathSeparator)
+
 	//filed
 	ant.caseSensitive = true
 	ant.trimTokens = false
@@ -74,6 +81,20 @@ func (ant *AntPathMatcher) IsPattern(path string) bool{
 //Match
 func (ant *AntPathMatcher) Match(pattern,path string) bool{
 	return ant.doMatch(pattern, path, true, nil)
+}
+
+// @Override
+// MatchV2
+func (ant *AntPathMatcher) MatchV2(pattern, path string, tokens []*string) bool {
+	return ant.doMatchV2(pattern, path, true, nil, tokens)
+}
+
+func (ant *AntPathMatcher) TokenizePath(path string) []*string {
+	return ant.tokenizePath(path)
+}
+
+func (ant *AntPathMatcher) GetStringMatcher(pattern string) *AntPathStringMatcher {
+	return ant.getStringMatcher(pattern)
 }
 
 //@Override

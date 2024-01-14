@@ -46,10 +46,8 @@ var GlobPattern *regexp.Regexp
 //initial
 func init() {
 	//reg
-	reg,err := regexp.Compile("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}")
-	if err == nil {
-		GlobPattern = reg
-	}
+	reg := regexp.MustCompile("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}")
+	GlobPattern = reg
 
 }
 
@@ -80,10 +78,8 @@ func NewDefaultStringMatcher(pattern string,caseSensitive bool)*AntPathStringMat
 	//caseSensitive
 	stringMatcher.caseSensitive = caseSensitive
 	//写入表达式
-	reg,err := regexp.Compile(*stringMatcher.patternBuilder(pattern,false,caseSensitive))
-	if err == nil {
-		stringMatcher.pattern = reg
-	}
+	reg := regexp.MustCompile(*stringMatcher.patternBuilder(pattern,false,caseSensitive))
+	stringMatcher.pattern = reg
 	return stringMatcher
 }
 
@@ -95,10 +91,8 @@ func NewMatchesStringMatcher(pattern string,caseSensitive bool) *AntPathStringMa
 	//caseSensitive
 	stringMatcher.caseSensitive = caseSensitive
 	//写入表达式
-	reg,err := regexp.Compile(*stringMatcher.patternBuilder(pattern,true,caseSensitive))
-	if err == nil {
-		stringMatcher.pattern = reg
-	}
+	reg := regexp.MustCompile(*stringMatcher.patternBuilder(pattern,true,caseSensitive))
+	stringMatcher.pattern = reg
 	return stringMatcher
 }
 

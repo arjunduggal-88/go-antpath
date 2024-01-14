@@ -39,7 +39,16 @@ type PathMatcher interface {
 	 * {@code false} if it didn't
 	 */
 	//Match
-	Match(pattern,path string) bool
+	Match(pattern, path string) bool
+	
+	//Match
+	MatchV2(pattern, path string, tokens []*string) bool
+
+	//TokenizePath
+	TokenizePath(path string) []*string
+
+	// getStringMatcher
+	GetStringMatcher(pattern string) *AntPathStringMatcher
 
 	/**
 	 * Match the given {@code path} against the corresponding part of the given

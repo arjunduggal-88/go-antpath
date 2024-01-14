@@ -39,6 +39,19 @@ func Match(pattern,path string) bool{
 	return pMatcher.Match(pattern,path)
 }
 
+//export MatchV2
+func MatchV2(pattern, path string, tokens []*string) bool {
+	return pMatcher.MatchV2(pattern, path, tokens)
+}
+
+func TokenizePath(path string) []*string {
+	return pMatcher.TokenizePath(path)
+}
+
+func GetStringMatcher(pattern string) *AntPathStringMatcher {
+	return pMatcher.GetStringMatcher(pattern)
+}
+
 //export MatchStart
 func MatchStart(pattern,path string) bool{
 	return pMatcher.MatchStart(pattern,path)

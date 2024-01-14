@@ -99,6 +99,28 @@ func StartsWith(str,prefix string,toffset int) bool{
 	return true
 }
 
+func StartsWithV2(ta, pa []byte, toffset, strLen, prefixLen int) bool {
+	to := toffset
+	po := 0
+	pc := prefixLen
+	// Note: toffset might be near -1>>>1.
+	if (toffset < 0) || (toffset > strLen-pc) {
+		return false
+	}
+	for {
+		if pc--; pc >= 0 {
+			if ta[to] != pa[po] {
+				to++
+				po++
+				return false
+			}
+		} else {
+			break
+		}
+	}
+	return true
+}
+
 //IsBlank 判断是否存在空格
 func IsBlank(source string) bool{
 	if strings.EqualFold(EmptyString,source) {
